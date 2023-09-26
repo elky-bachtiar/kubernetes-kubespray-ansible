@@ -8,3 +8,4 @@ Kubespray is an application that allows us to create kubernetes clusters by usin
 
 
 # LAB Setup
+![LAB SETUP](lab-setup.png)
