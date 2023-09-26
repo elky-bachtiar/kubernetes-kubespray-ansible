@@ -21,3 +21,31 @@ git clone https://github.com/kubernetes-incubator/kubespray.git
 cd kubespray
 pip install -r requirements.txt
 ```
+
+
+Verify the ansible version, run
+```bash
+ansible --version
+
+ansible [core 2.14.10]
+  config file = /Users/x/Documents/CJIB/kubespray/ansible.cfg
+  configured module search path = ['/Users/x/Documents/CJIB/kubespray/library']
+  ansible python module location = /opt/homebrew/lib/python3.11/site-packages/ansible
+  ansible collection location = /Users/x/.ansible/collections:/usr/share/ansible/collections
+  executable location = /opt/homebrew/bin/ansible
+  python version = 3.11.5 (main, Aug 24 2023, 15:09:45) [Clang 14.0.3 (clang-1403.0.22.14.1)] (/opt/homebrew/opt/python@3.11/bin/python3.11)
+  jinja version = 3.1.2
+  libyaml = True
+```
+
+Create the hosts inventory, run below commands and don’t forget to replace IP address that suits to your deployment.
+```bash
+cp -rfp inventory/sample inventory/mycluster
+declare -a IPS=(51.15.48.238 192.168.1.241 51.15.122.186 51.15.95.43)
+CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+```
+
+Modify the inventory file, set 1 control nodes and 2 worker nodes
+```bash
+vi inventory/mycluster/hosts.yaml
+```
