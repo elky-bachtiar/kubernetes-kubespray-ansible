@@ -43,6 +43,26 @@ Create the hosts inventory, run below commands and don’t forget to replace IP 
 cp -rfp inventory/sample inventory/mycluster
 declare -a IPS=(51.15.48.238 192.168.1.241 51.15.122.186 51.15.95.43)
 CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+
+DEBUG: Adding group all
+DEBUG: Adding group kube_control_plane
+DEBUG: Adding group kube_node
+DEBUG: Adding group etcd
+DEBUG: Adding group k8s_cluster
+DEBUG: Adding group calico_rr
+DEBUG: adding host node1 to group all
+DEBUG: adding host node2 to group all
+DEBUG: adding host node3 to group all
+DEBUG: adding host node4 to group all
+DEBUG: adding host node1 to group etcd
+DEBUG: adding host node2 to group etcd
+DEBUG: adding host node3 to group etcd
+DEBUG: adding host node1 to group kube_control_plane
+DEBUG: adding host node2 to group kube_control_plane
+DEBUG: adding host node1 to group kube_node
+DEBUG: adding host node2 to group kube_node
+DEBUG: adding host node3 to group kube_node
+DEBUG: adding host node4 to group kube_node
 ```
 
 Modify the inventory file, set 1 control nodes and 2 worker nodes
