@@ -9,3 +9,15 @@ Kubespray is an application that allows us to create kubernetes clusters by usin
 
 # LAB Setup
 ![LAB SETUP](lab-setup.png)
+
+
+## Step 1) Configure Kubespray Node
+Login to your Ubuntu 22.04 system and install ansible. Run the following set of commands:
+
+```bash
+sudo apt update
+sudo apt install git python3 python3-pip -y
+git clone https://github.com/kubernetes-incubator/kubespray.git
+cd kubespray
+pip install -r requirements.txt
+```
