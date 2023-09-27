@@ -41,7 +41,7 @@ ansible [core 2.14.10]
 Create the hosts inventory, run below commands and don’t forget to replace IP address that suits to your deployment.
 ```bash
 cp -rfp inventory/sample inventory/mycluster
-declare -a IPS=(51.15.48.238 51.15.68.137 51.15.122.186 51.15.95.43)
+declare -a IPS=(172.16.12.2 172.16.12.3 172.16.12.5 172.16.12.4)
 CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 
 DEBUG: Adding group all
@@ -70,3 +70,40 @@ Modify the inventory file, set 1 control nodes and 2 worker nodes
 vi inventory/mycluster/hosts.yaml
 ```
 ![hosts.yaml](hosts-yaml2.png)
+
+Save and close the file
+
+Review and modify the following parameters in file “inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml”.
+
+```bash
+kube_version: v1.26.2
+kube_network_plugin: calico
+kube_pods_subnet: 10.233.64.0/18
+kube_service_addresses: 10.233.0.0/18
+cluster_name: bachtiar.local
+```
+
+To enable addons like kuberenetes dashboard and ingress controller, set the parameters as enabled in the file “inventory/mycluster/group_vars/k8s_cluster/addons.yml”
+```bash
+$ vi inventory/mycluster/group_vars/k8s_cluster/addons.yml
+-----------
+dashboard_enabled: true
+ingress_nginx_enabled: true
+ingress_nginx_host_network: true
+-----------
+```
+
+## Step 2) Copy SSH-keys from ansible node to all other nodes
+First generate the ssh-keys for your local user on your ansible node,
+
+```bash
+ssh-keygen
+```
+
+Copy the ssh-keys using ssh-copy-id command,
+```bash
+ssh-copy-id sysops@51.15.48.238   
+ssh-copy-id sysops@51.15.68.137
+ssh-copy-id sysops@51.15.122.186
+ssh-copy-id sysops@51.15.95.43
+```
