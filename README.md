@@ -8,7 +8,7 @@ Kubespray is an application that allows us to create kubernetes clusters by usin
 
 
 # LAB Setup
-![LAB SETUP](lab-setup2.png)
+![LAB SETUP](lab-setup.png)
 
 
 ## Step 1) Configure Kubespray/Ansible Node
