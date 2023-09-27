@@ -28,12 +28,12 @@ Verify the ansible version, run
 ansible --version
 
 ansible [core 2.14.10]
-  config file = /Users/x/Documents/CJIB/kubespray/ansible.cfg
-  configured module search path = ['/Users/x/Documents/CJIB/kubespray/library']
-  ansible python module location = /opt/homebrew/lib/python3.11/site-packages/ansible
-  ansible collection location = /Users/x/.ansible/collections:/usr/share/ansible/collections
-  executable location = /opt/homebrew/bin/ansible
-  python version = 3.11.5 (main, Aug 24 2023, 15:09:45) [Clang 14.0.3 (clang-1403.0.22.14.1)] (/opt/homebrew/opt/python@3.11/bin/python3.11)
+  config file = /root/kubespray/ansible.cfg
+  configured module search path = ['/root/kubespray/library']
+  ansible python module location = /usr/local/lib/python3.10/dist-packages/ansible
+  ansible collection location = /root/.ansible/collections:/usr/share/ansible/collections
+  executable location = /usr/local/bin/ansible
+  python version = 3.10.12 (main, Jun 11 2023, 05:26:28) [GCC 11.4.0] (/usr/bin/python3)
   jinja version = 3.1.2
   libyaml = True
 ```
@@ -41,7 +41,7 @@ ansible [core 2.14.10]
 Create the hosts inventory, run below commands and don’t forget to replace IP address that suits to your deployment.
 ```bash
 cp -rfp inventory/sample inventory/mycluster
-declare -a IPS=(172.16.12.2 172.16.12.3 172.16.12.5 172.16.12.4)
+declare -a IPS=(10.196.84.69 10.19.72.7 10.196.100.21 10.196.116.3)
 CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 
 DEBUG: Adding group all
@@ -69,7 +69,7 @@ Modify the inventory file, set 1 control nodes and 2 worker nodes
 ```bash
 vi inventory/mycluster/hosts.yaml
 ```
-![hosts.yaml](hosts-yaml2.png)
+![hosts.yaml](hosts-yaml.png)
 
 Save and close the file
 
@@ -102,8 +102,43 @@ ssh-keygen
 
 Copy the ssh-keys using ssh-copy-id command,
 ```bash
-ssh-copy-id sysops@51.15.48.238   
-ssh-copy-id sysops@51.15.68.137
-ssh-copy-id sysops@51.15.122.186
-ssh-copy-id sysops@51.15.95.43
+ssh-copy-id sysops@10.196.84.69
+ssh-copy-id sysops@10.19.72.7
+ssh-copy-id sysops@10.196.100.21
+ssh-copy-id sysops@10.196.116.3
 ```
+
+Also run the following command on each node.
+
+```bash
+echo "sysops ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/sysops
+```
+
+## Step 3) Disable Firewall and Enable IPV4 forwarding
+To disable firewall on all the nodes, run following ansible command from ansible node,
+```bash
+d kubespray
+ansible all -i inventory/mycluster/hosts.yaml -m shell -a "sudo systemctl stop firewalld && sudo systemctl disable firewalld"
+```
+
+Run following ansible commands to enable IPv4 forwarding and disable swap on all the nodes,
+```bash
+ansible all -i inventory/mycluster/hosts.yaml -m shell -a "echo 'net.ipv4.ip_forward=1' | sudo tee -a /etc/sysctl.conf"
+ansible all -i inventory/mycluster/hosts.yaml -m shell -a "sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab && sudo swapoff -a"
+```
+
+## Step 4) Start Kubernetes deployment
+Now, we are all set to start Kubernetes cluster deployment, run following ansible playbook from ansible node,
+```bash
+cd kubespray
+ansible-playbook -i inventory/mycluster/hosts.yaml --become --become-user=root cluster.yml
+```
+
+## Step 5) Access Kubernetes cluster
+Login to first master node, switch to root user, run kubectl commands from there,
+```bash
+kubectl get nodes
+kubectl get pods -A
+```
+
+![Master cluster](master-cluster.png)
