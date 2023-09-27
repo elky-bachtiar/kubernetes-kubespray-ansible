@@ -69,4 +69,4 @@ Modify the inventory file, set 1 control nodes and 2 worker nodes
 ```bash
 vi inventory/mycluster/hosts.yaml
 ```
-![hosts.yaml](hosts-yaml.png)
+![hosts.yaml](hosts-yaml2.png)
